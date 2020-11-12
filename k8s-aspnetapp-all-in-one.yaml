@@ -5,12 +5,13 @@ metadata:
 spec:
   provider: azure
   parameters:
+    tenantId: "[*** YOUR KEY VAULT TENANT ID ***]"  # the Azure Active Directory tenant ID of the KeyVault
+    keyvaultName: "[*** YOUR KEY VAULT NAME ***]"   # the name of the KeyVault
     usePodIdentity: "false"         # [OPTIONAL for Azure] if not provided, will default to "false"
     useVMManagedIdentity: "false"   # [OPTIONAL available for version > 0.0.4] if not provided, will default to "false"
-    userAssignedIdentityID: ""  # [OPTIONAL available for version > 0.0.4] use the client id to specify which user assigned managed identity to use. If using a user assigned identity as the VM's managed identity, then specify the identity's client id. If empty, then defaults to use the system assigned identity on the VM
-    keyvaultName: "[*** YOUR KEY VAULT NAME ***]"          # the name of the KeyVault
-    cloudName: ""          # [OPTIONAL available for version > 0.0.4] if not provided, azure environment will default to AzurePublicCloud
-    cloudEnvFileName: ""   # [OPTIONAL available for version > 0.0.7] use to define path to file for populating azure environment
+    userAssignedIdentityID: ""      # [OPTIONAL available for version > 0.0.4] use the client id to specify which user assigned managed identity to use. If using a user assigned identity as the VM's managed identity, then specify the identity's client id. If empty, then defaults to use the system assigned identity on the VM
+    cloudName: ""                   # [OPTIONAL available for version > 0.0.4] if not provided, azure environment will default to AzurePublicCloud
+    cloudEnvFileName: ""            # [OPTIONAL available for version > 0.0.7] use to define path to file for populating azure environment
     objects:  |
       array:
         - |
@@ -19,9 +20,6 @@ spec:
           objectType: secret        # object types: secret, key or cert
           objectFormat: pfx         # for .NET Core 3.1 we want the PFX format
           objectVersion: ""         # [OPTIONAL] object versions, default to latest if empty
-    resourceGroup: ""            # [REQUIRED for version < 0.0.4] the resource group of the KeyVault
-    subscriptionId: ""           # [REQUIRED for version < 0.0.4] the subscription ID of the KeyVault
-    tenantId: "[*** YOUR KEY VAULT TENANT ID ***]"                 # the Azure Active Directory tenant ID of the KeyVault
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,14 +29,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "aks-keyvault-aspnetcore-pod"
+      app: aks-keyvault-aspnetcore-pod
   template:
     metadata:
       labels:
         app: aks-keyvault-aspnetcore-pod
     spec:
-      securityContext:
-        fsGroup: 999
       containers:
       - name: aks-keyvault-aspnetcore-pod
         image: "[*** YOUR ACR NAME ***].azurecr.io/aspnet-keyvault"

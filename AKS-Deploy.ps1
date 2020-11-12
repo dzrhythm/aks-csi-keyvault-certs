@@ -8,6 +8,7 @@ $location =      "[*** EastUS ***]"
 $aksName =       "[*** YOUR AKS NAME ***]"
 $acrName =       "[*** YOUR ACR NAME ***]"
 $keyVaultName =  "[*** YOUR KEY VAULT NAME ***]"
+# Azure Active Directory app registration client id and secret for authenticating to Key Vault
 $clientID =      "[*** YOUR AAD APPCLIENT ID ***]"
 $clientSecret =  "[*** YOUR AAD APPCLIENT SECRET ***]"
 
@@ -36,13 +37,18 @@ az keyvault set-policy -n "$keyVaultName" --secret-permissions get --spn "$clien
 az aks create --resource-group "$resourceGroup" --name "$aksName" --node-count 2 --generate-ssh-keys --attach-acr "$acrName"
 az aks get-credentials --resource-group "$resourceGroup" --name "$aksName"
 
+# Install the CSI secret driver and provider
 helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts
 helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name
 
-kubectl create secret generic kvcreds --from-literal "clientid=$clientID" --from-literal "clientsecret=$clientSecret" --type=azure/kv
+# Create the secret for Key Vault credentials
+kubectl create secret generic kvcreds --from-literal "clientid=$clientID" --from-literal "clientsecret=$clientSecret"
+
+# Create the deployment
 kubectl apply -f k8s-aspnetapp-all-in-one.yaml
+
 kubectl get pods
 kubectl get services
 
-# delete everything when done
+# delete the cluster when done
 #az aks delete --name "$aksName" --resource-group "$resourceGroup" --yes --no-wait

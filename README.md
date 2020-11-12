@@ -2,7 +2,7 @@
 
 Sample for using Azure Key Vault for mounting certificates in containers running
 in Kubernetes, via the
-[Kuberntes Secret Store driver for Azure](https://github.com/Azure/secrets-store-csi-driver-provider-azure).
+[Kuberntes CSI Secret Store driver for Azure](https://github.com/Azure/secrets-store-csi-driver-provider-azure).
 
 The basis for the application source comes from the aspnetapp sample application in the
 [Microsoft dotnet docker repo](https://github.com/dotnet/dotnet-docker).
@@ -36,7 +36,7 @@ These instructions assume you have basic knowledge about:
 See [AKS-Deploy.ps1](AKS-Deploy.ps1) for example Azure CLI commands
 for most of these steps. To run this sample in AKS:
 
-1. Create a self-signed private key certificate, or use the one included in this repo:
+1. Create a self-signed private key certificate, or use the sample one included in this repo:
    [aspnetapp\certs\localhost.pfx](aspnetapp\certs\localhost.pfx).
    (Password: `abcdefghijklmnopqrstuvwxyz0123456789`).
 
@@ -61,20 +61,19 @@ for most of these steps. To run this sample in AKS:
    permissions for keys, secrets and certificates.
 
 9. Edit the [k8s-aspnetapp-all-in-one.yaml](k8s-aspnetapp-all-in-one.yaml) file:
+   - Update the SecretProviderClass section with the `tenantid` and `keyvaultname` of your Key Vault.
    - Update the Deployment section with the registry path to your Docker `image`.
-   - Update the Deployment section with the name and tenant id of your Key Vault in the
-     `keyvaultname` and `tenantid` under the volumes configuration.
 
 10. In a terminal get credentials to your cluster with `az aks get-credentials`.
 
-11. Deploy the Key Vault FlexVolume driver to your cluster:
+11. Deploy CSI Secret Store driver and provider for Azure to your cluster:
 
-    `kubectl create -f https://raw.githubusercontent.com/Azure/kubernetes-keyvault-flexvol/master/deployment/kv-flexvol-installer.yaml`
+    `helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts`
+    `helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name`
 
-12. Using the AAD registration client id and secret, create a Kubernetes Secret for the
-    Key Vault FlexVolume driver:
+12. Using the AAD registration client id and secret, create a Kubernetes Secret Key Vault credentials, substituting your CLIENTID and CLIENTSECRET:
 
-    `kubectl create secret generic kvcreds --from-literal clientid=<CLIENTID> --from-literal clientsecret=<CLIENTSECRET> --type=azure/kv`
+    `kubectl create secret generic kvcreds --from-literal clientid=<CLIENTID> --from-literal clientsecret=<CLIENTSECRET>`
 
 13. Apply the application YAML:
 
