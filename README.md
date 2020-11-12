@@ -11,11 +11,11 @@ This code is for demonstration purposes only and is not intended for production.
 
 ## Requirements
 
-- .NET Core 3.1
-- Docker
+- [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- [Docker](https://www.docker.com/products/docker-desktop)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [Helm](https://helm.sh) 3 or later.
-- A Microsoft Azure account.
+- A [Microsoft Azure account](https://azure.microsoft.com/en-us/free/).
 - Recommended: [Visual Studio Code](https://code.visualstudio.com/)
   with the Docker and Kubernetes extensions.
 
@@ -61,15 +61,17 @@ for most of these steps. To run this sample in AKS:
    permissions for keys, secrets and certificates.
 
 9. Edit the [k8s-aspnetapp-all-in-one.yaml](k8s-aspnetapp-all-in-one.yaml) file:
-   - Update the SecretProviderClass section with the `tenantid` and `keyvaultname` of your Key Vault.
-   - Update the Deployment section with the registry path to your Docker `image`.
+   - Update the `SecretProviderClass` section with the `tenantid` and `keyvaultname` of your Key Vault.
+   - Update the `Deployment` section with the registry path to your Docker `image`.
 
 10. In a terminal get credentials to your cluster with `az aks get-credentials`.
 
 11. Deploy CSI Secret Store driver and provider for Azure to your cluster:
 
     `helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts`
+
     `helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name`
+
 
 12. Using the AAD registration client id and secret, create a Kubernetes Secret Key Vault credentials, substituting your CLIENTID and CLIENTSECRET:
 
@@ -88,7 +90,7 @@ for most of these steps. To run this sample in AKS:
     `kubectl get service aks-keyvault-aspnetcore-svc`
 
     Get the EXTERNAL-IP and browse to it using https://YOUR-IP
-    (you may need to bypass the warning about the self-signed cert).
+    (you will probably need to bypass the warning about the self-signed cert).
 
 ## Notes
 
