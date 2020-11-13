@@ -53,10 +53,11 @@ spec:
           readOnly: true
         resources:
           requests:
+            memory: 512Mi
             cpu: 250m
           limits:
-            memory: 500Mi
-            cpu: 1
+            memory: 1024Mi
+            cpu: 500m
       volumes:
       - name: aks-keyvault-aspnetcore-httpscert
         csi:
