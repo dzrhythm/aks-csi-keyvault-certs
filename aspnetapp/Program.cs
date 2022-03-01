@@ -32,15 +32,18 @@ namespace aspnetapp
 			{
 				// When we get the certificate from Key Vault as a secret,
 				// it provides the entire PFX file but without the password.
-				// Since PFX is a binary format and a secret is a string,
-				// it is base64 encoded. So we read in the text file and convert
-				// it to the bytes to initialize the X509Certificate2.
 				var certPath = Environment.GetEnvironmentVariable("HTTPS_CERTIFICATE_PATH");
 				if (!string.IsNullOrEmpty(certPath))
 				{
-					var certString = System.IO.File.ReadAllText(certPath);
-					var certBytes = Convert.FromBase64String(certString);
-					var httpsCert = new X509Certificate2(certBytes);
+					// Update: The CSI Secret Store Provider for Azure now has
+					// an option to base64-decode the cert file for us, so
+					// we no longer need to do that step.
+					//
+					// var certString = System.IO.File.ReadAllText(certPath);
+					// var certBytes = Convert.FromBase64String(certString);
+					// var httpsCert = new X509Certificate2(certBytes);
+
+					var httpsCert = new X509Certificate2(certPath);
 
 					Console.WriteLine($"HTTPS cert Subject:    {httpsCert.Subject}");
 					Console.WriteLine($"HTTPS cert Thumbprint: {httpsCert.Thumbprint}");

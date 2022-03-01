@@ -5,6 +5,9 @@
     <UserSecretsId>4a137167c72ce60501aac137b0101633</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="certs\localhost.no-pwd.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="certs\locahost.pfx.base64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
