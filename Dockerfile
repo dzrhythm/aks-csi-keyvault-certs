@@ -1,10 +1,9 @@
-# https://hub.docker.com/_/microsoft-dotnet-core
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim as base
 EXPOSE 8080
 EXPOSE 8443
 ENV ASPNETCORE_URLS "https://+:8443;http://+:8080"
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers

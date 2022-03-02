@@ -11,7 +11,7 @@ This code is for demonstration purposes only and is not intended for production.
 
 ## Requirements
 
-- [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [Docker](https://www.docker.com/products/docker-desktop)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 - [Helm](https://helm.sh) 3 or later.
@@ -71,7 +71,6 @@ for most of these steps. To run this sample in AKS:
     `helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts`
 
     `helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name`
-
 
 12. Using the AAD registration client id and secret, create a Kubernetes Secret Key Vault credentials, substituting your CLIENTID and CLIENTSECRET:
 

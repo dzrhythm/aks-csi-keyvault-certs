@@ -9,7 +9,7 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/aspnetapp/bin/Debug/netcoreapp3.1/aspnetapp.dll",
+        "program": "${workspaceFolder}/aspnetapp/bin/Debug/net6.0/aspnetapp.dll",
         "args": [],
         "cwd": "${workspaceFolder}/aspnetapp",
         "stopAtEntry": false,

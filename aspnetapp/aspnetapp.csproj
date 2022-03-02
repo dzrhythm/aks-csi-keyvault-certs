@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>4a137167c72ce60501aac137b0101633</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="certs\localhost.no-pwd.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="certs\locahost.pfx.base64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

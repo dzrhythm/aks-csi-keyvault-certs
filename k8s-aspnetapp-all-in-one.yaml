@@ -1,43 +1,49 @@
-apiVersion: secrets-store.csi.x-k8s.io/v1alpha1
+# Before applying, be sure to make these updates:
+# * Update the SecretProviderClass with your
+#    - tenantId
+#    - keyvaultName
+# * Update the container image to match your ACR and image tag
+
+apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
-  name: azure-kvname
+  name: azure-kv-certs
 spec:
   provider: azure
   parameters:
     tenantId: "[*** YOUR KEY VAULT TENANT ID ***]"  # the Azure Active Directory tenant ID of the KeyVault
     keyvaultName: "[*** YOUR KEY VAULT NAME ***]"   # the name of the KeyVault
-    usePodIdentity: "false"         # [OPTIONAL for Azure] if not provided, will default to "false"
-    useVMManagedIdentity: "false"   # [OPTIONAL available for version > 0.0.4] if not provided, will default to "false"
-    userAssignedIdentityID: ""      # [OPTIONAL available for version > 0.0.4] use the client id to specify which user assigned managed identity to use. If using a user assigned identity as the VM's managed identity, then specify the identity's client id. If empty, then defaults to use the system assigned identity on the VM
-    cloudName: ""                   # [OPTIONAL available for version > 0.0.4] if not provided, azure environment will default to AzurePublicCloud
-    cloudEnvFileName: ""            # [OPTIONAL available for version > 0.0.7] use to define path to file for populating azure environment
+    usePodIdentity: "false"
+    useVMManagedIdentity: "false"
+    userAssignedIdentityID: ""
+    cloudName: ""
+    cloudEnvFileName: ""
     objects:  |
       array:
         - |
           objectName: aks-https
-          objectAlias: https.pfx.base64
+          objectAlias: https.pfx
           objectType: secret        # object types: secret, key or cert
-          objectFormat: pfx         # for .NET Core 3.1 we want the PFX format
-          objectVersion: ""         # [OPTIONAL] object versions, default to latest if empty
+          objectFormat: pfx         # ensure PFX format
+          objectEncoding: base64    # configure the provider to decode the base64 content so we get a binary PFX
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aks-keyvault-aspnetcore
+  name: azure-kv-aspnet-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aks-keyvault-aspnetcore-pod
+      app: azure-kv-aspnet-pod
   template:
     metadata:
       labels:
-        app: aks-keyvault-aspnetcore-pod
+        app: azure-kv-aspnet-pod
     spec:
       containers:
-      - name: aks-keyvault-aspnetcore-pod
-        image: "[*** YOUR ACR NAME ***].azurecr.io/aspnet-keyvault"
+      - name: app
+        image: "[*** YOUR ACR NAME ***].azurecr.io/aspnetapp-csi-keyvault"
         imagePullPolicy: Always
         ports:
         - name: http
@@ -46,9 +52,9 @@ spec:
           containerPort: 8443
         env:
         - name: HTTPS_CERTIFICATE_PATH
-          value: "/certs/https.pfx.base64"
+          value: "/certs/https.pfx"
         volumeMounts:
-        - name: aks-keyvault-aspnetcore-httpscert
+        - name: azure-kv-aspnet-httpscert-vol
           mountPath: /certs
           readOnly: true
         resources:
@@ -59,19 +65,19 @@ spec:
             memory: 1024Mi
             cpu: 500m
       volumes:
-      - name: aks-keyvault-aspnetcore-httpscert
+      - name: azure-kv-aspnet-httpscert-vol
         csi:
           driver: secrets-store.csi.k8s.io
           readOnly: true
           volumeAttributes:
-            secretProviderClass: "azure-kvname"
+            secretProviderClass: "azure-kv-certs"
           nodePublishSecretRef:
             name: kvcreds
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aks-keyvault-aspnetcore-svc
+  name: azure-kv-aspnet-svc
 spec:
   type: LoadBalancer
   ports:
@@ -82,4 +88,4 @@ spec:
     port: 443
     targetPort: https
   selector:
-    app: aks-keyvault-aspnetcore-pod
+    app: azure-kv-aspnet-pod

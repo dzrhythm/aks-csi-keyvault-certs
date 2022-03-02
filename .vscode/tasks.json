@@ -79,7 +79,8 @@
             ],
             "dockerRun": {
                 "env": {
-                    "HTTPS_CERTIFICATE_PATH": "certs/locahost.pfx.base64",
+                    // Simulate PFX cert mount from Key Vault with no password
+                    "HTTPS_CERTIFICATE_PATH": "certs/localhost.no-pwd.pfx",
                     "ASPNETCORE_URLS": "https://+:8443;http://+:8080"
                 }
             },
