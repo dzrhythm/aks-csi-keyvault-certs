@@ -72,7 +72,6 @@ for most of these steps. To run this sample in AKS:
 
     `helm install csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --generate-name`
 
-
 12. Using the AAD registration client id and secret, create a Kubernetes Secret Key Vault credentials, substituting your CLIENTID and CLIENTSECRET:
 
     `kubectl create secret generic kvcreds --from-literal clientid=<CLIENTID> --from-literal clientsecret=<CLIENTSECRET>`
