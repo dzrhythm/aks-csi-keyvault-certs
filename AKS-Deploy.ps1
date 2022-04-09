@@ -37,7 +37,7 @@ az aks create --resource-group "$resourceGroup" --name "$aksName" --node-count 2
 az aks get-credentials --resource-group "$resourceGroup" --name "$aksName"
 
 # Install the CSI secret driver and provider to the kube-system namespace
-helm repo add csi-secrets-store-provider-azure https://raw.githubusercontent.com/Azure/secrets-store-csi-driver-provider-azure/master/charts
+helm repo add csi-secrets-store-provider-azure https://azure.github.io/secrets-store-csi-driver-provider-azure/charts
 helm install csi-secrets-store csi-secrets-store-provider-azure/csi-secrets-store-provider-azure --namespace kube-system
 
 # Create the Kubernetes secret for Key Vault credentials
